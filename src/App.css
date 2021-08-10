@@ -12,6 +12,12 @@ h1 {
   margin-top: 10px;
   margin-bottom: 20px;
 }
+
+.logo {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .Container {
   position: relative;
   background-color: #16181d;
