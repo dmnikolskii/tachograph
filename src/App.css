@@ -10,8 +10,8 @@
 
 h1 {
   margin-top: 10px;
+  margin-bottom: 20px;
 }
-
 .Container {
   position: relative;
   background-color: #16181d;
@@ -26,7 +26,7 @@ h1 {
 }
 
 .TaskDescription {
-  width: 70%;
+  width: 80%;
   height: 30%;
   margin: 20px;
   margin-top: 10px;
@@ -37,7 +37,7 @@ h1 {
   -o-border-radius: 10px;
   padding: 30px;
   resize: none;
-  max-width: 70%;
+  max-width: 80%;
 }
 
 .Button {
@@ -48,7 +48,7 @@ h1 {
   font-size: 150%;
   color: white;
   width: 60%;
-  margin: 30px;
+  margin: 20px;
   text-shadow:    -1px -1px 0 #000,      
                   1px -1px 0 #000,    
                   -1px 1px 0 #000,    
