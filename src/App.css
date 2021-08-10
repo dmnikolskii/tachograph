@@ -1,3 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+  /*max-height: 700px;*/
+}
+
+.Container {
+  position: relative;
+  background-color: #16181d;
+  -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+  box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80vw;
+  height: 100vh;
+}
+
+.TaskDescription {
+  width: 70%;
+  height: 30%;
+  margin: 30px;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  padding: 30px;
+}
+
+.Button {
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  font-weight: bold;
+  font-size: 150%;
+  color: white;
+  width: 40%;
+  margin: 30px;
+  text-shadow:    -1px -1px 0 #000,      
+                  1px -1px 0 #000,    
+                  -1px 1px 0 #000,    
+                  1px 1px 0 #000;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.Red {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ad6c6c), to(#ff0000));
+}
+
+.Button:active.Red{
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ff0000), to(#ad6c6c));
+}
+
+.Green {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#a0a0f7), to(#0000ff));
+}
+
+.Button:active.Green{
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#0000ff), to(#a0a0f7));
+}
+
+
 .App {
   text-align: center;
 }
