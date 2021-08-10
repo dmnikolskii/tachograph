@@ -6,8 +6,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="Container">
+          <h1>Алиев Ж.О.</h1>
           <textarea className="TaskDescription" placeholder="Опишите планируемую задачу"></textarea>
-          <button className="Button Green">Старт</button>
+          <button className="Button Green" disabled={true}>Старт</button>
           <button className="Button Red">Стоп</button>
         </div>
       </header>

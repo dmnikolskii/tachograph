@@ -8,6 +8,10 @@
   /*max-height: 700px;*/
 }
 
+h1 {
+  margin-top: 10px;
+}
+
 .Container {
   position: relative;
   background-color: #16181d;
@@ -24,13 +28,16 @@
 .TaskDescription {
   width: 70%;
   height: 30%;
-  margin: 30px;
+  margin: 20px;
+  margin-top: 10px;
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   -ms-border-radius: 10px;
   -o-border-radius: 10px;
   padding: 30px;
+  resize: none;
+  max-width: 70%;
 }
 
 .Button {
@@ -40,7 +47,7 @@
   font-weight: bold;
   font-size: 150%;
   color: white;
-  width: 40%;
+  width: 60%;
   margin: 30px;
   text-shadow:    -1px -1px 0 #000,      
                   1px -1px 0 #000,    
@@ -71,6 +78,9 @@
   background-image: -webkit-gradient(linear, left top, left bottom, from(#0000ff), to(#a0a0f7));
 }
 
+.Button:disabled {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#9b9ba0), to(#4b4b4b));
+}
 
 .App {
   text-align: center;
