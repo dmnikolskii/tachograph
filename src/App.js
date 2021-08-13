@@ -15,7 +15,7 @@ function App() {
       <header className="App-header">
         <div className="Container">
           <Logo className="logo"></Logo>
-          <h1>Алиев Ж.О.</h1>
+          <h1>{name}</h1>
           <textarea className="TaskDescription" placeholder="Опишите планируемую задачу"></textarea>
           <button className="Button Green" disabled={false}>Старт</button>
           <button className="Button Red">Стоп</button>
