@@ -10,41 +10,137 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-let db = new sqlite3.Database('./database/tasks.db', (err) => {
-    if (err) {
-        console.error(err.message);
-        throw err;
-    }
-    console.log('Connected to the database.');
-});
+app.get("/name/:employee", (req, res) => {
 
-app.get("/", (req, res) => {
-    res.send('hi');
-    console.log(req);
-});
-
-app.post('/api/fetch_links', (req, res) => {
-
-    const country = req.body.country;
-    const city = req.body.city;
-    const line = req.body.line;
-    const pageid = req.body.pageid;
-    
-    let sql = `SELECT * FROM twin_links WHERE pageid == ${pageid} AND 
-                                                country = '${country}' AND 
-                                                plant = '${city}' AND 
-                                                line = '${line}';`;
-
-    console.log(req.body);
+    const employee = req.params.employee;
+    console.log(employee)
+    let sql = `SELECT * FROM staff WHERE employee == "${employee}"`;
+    console.log(sql)
+    let db = new sqlite3.Database('./database/tasks.db', (err) => {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        console.log('Connected to the database.');
+    });
     
     db.all(sql,[],(err, rows ) => {
-        // console.log(err);   
-        console.log(rows);
-        //res.send("Hi");   
-        res.send(rows);   
+        // console.log(rows);
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        const employee = rows;
+        //res.send(rows);   
+        db.all(`SELECT task_description FROM tasks WHERE id == ?`,[employee[0].task_id],(err, rows ) => {
+            console.log(rows);
+            res.send({employee: employee[0], task: rows[0]});               
+        });
+            
+    });
+
+    db.close()  
+
+});
+
+app.post('/api/start', (req, res) => {
+    const query = req.body.query;
+    console.log("****START*********")
+    console.log(query)
+    //let sql_employee = `UPDATE staff SET active = 1 WHERE id == ?`;
+    var t_id = 0;
+    let sql_insertion = `INSERT INTO tasks (employee_name, task_description, start_time) VALUES (?, ? , ?)`;
+    let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
+
+    let db = new sqlite3.Database('./database/tasks.db', (err) => {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        console.log('Connected to the database.');
+    });
+
+    db.run(sql_insertion, [query.name, query.task, Date.now()], function(err, rows) {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        t_id = this.lastID;
+        console.log("Inserted ID: " + t_id);
+
+        db.run(`UPDATE staff SET active = 1, task_id = ? WHERE id == ?`, [t_id, query.id], function(err){
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+
+                db.all(sql_updated_res,[],(err, rows) => {
+                    if (err) {
+                        console.error(err.message);
+                        db.close()  
+                        throw err;
+                    }
+                    res.send(rows);         
+                });
+            });
+    
+    });
+
+    db.close()  
+
+});
+    
+app.post('/api/stop', (req, res) => {
+    const query = req.body.query;
+    console.log("****STOP*********")
+    console.log(query)
+
+    let sql_employee = `UPDATE staff SET active = 0 WHERE id == ?`;
+    let sql_update = `UPDATE tasks SET finish_time = ${Date.now()} WHERE id == ?`;
+    let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
+
+    let db = new sqlite3.Database('./database/tasks.db', (err) => {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        console.log('Connected to the database.');
+    });
+
+    db.run(sql_update, query.task_id, function(err){
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
         
     });
-    //db.close()    
+
+    db.run(sql_employee, query.id, function(err){
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        
+    });
+
+    db.all(sql_updated_res,[],(err, rows) => {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        res.send(rows);         
+    });
+
+    db.close()  
 });
 
 const PORT = process.env.PORT || 3001;
