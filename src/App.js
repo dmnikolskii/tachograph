@@ -8,7 +8,8 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path = "/:employee" component = {MainPage} />  
+        {/*<Route path = "/:employee" component = {MainPage} />*/}
+        <Route path = "/" component = {MainPage} />  
       </Switch>
     </BrowserRouter>
 
