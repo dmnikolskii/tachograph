@@ -45,6 +45,32 @@ app.get("/name/:employee", (req, res) => {
 
 });
 
+app.get("/api/analytics", (req, res) => {
+
+    let sql = `SELECT * FROM tasks`;
+    let db = new sqlite3.Database('./database/tasks.db', (err) => {
+        if (err) {
+            console.error(err.message);
+            db.close()  
+            throw err;
+        }
+        console.log('Connected to the database.');
+        db.all(sql,[],(err, rows ) => {
+            // console.log(rows);
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+                console.log(rows);
+                res.send(rows);               
+            });    
+    });            
+
+    db.close()  
+
+});
+
 app.post('/api/start', (req, res) => {
     const query = req.body.query;
     console.log("****START*********")
