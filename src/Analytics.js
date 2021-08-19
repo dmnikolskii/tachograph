@@ -1,15 +1,15 @@
 import React from 'react'
 import {ReactComponent as Logo} from './Pepsico_logo.svg';
 import Axios from 'axios'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 var loadAnalytics = true;
 
 function getAnalytics(setAnalyticsRows) {
     Axios.get('http://localhost:3001/api/analytics')
     .then((response) => {
+        setAnalyticsRows(response.data);
         console.log(response.data);
-        setAnalyticsRows(response.data[0]);
     });    
 }
 
@@ -27,7 +27,9 @@ function Analytics() {
             <div>{row.task_description}</div>
             <div>{row.start_time}</div>
             <div>{row.finish_time}</div>
-            <div>preiod</div>
+                <div>
+                    {row.period}
+                </div>
         </div>
     );
 
@@ -36,7 +38,7 @@ function Analytics() {
             <header className="App-header">
                 <div className="Container">
                 <Logo className="logo"></Logo>
-                <listItems></listItems>
+                {listItems}
                 </div>
             </header>
         </div>    

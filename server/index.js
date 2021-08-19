@@ -62,7 +62,8 @@ app.get("/api/analytics", (req, res) => {
                 db.close()  
                 throw err;
             }
-                console.log(rows);
+            rows.period = 3;
+            console.log(rows);
                 res.send(rows);               
             });    
     });            
