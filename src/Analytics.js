@@ -20,27 +20,54 @@ function Analytics() {
     loadAnalytics = false;
 
     console.log(analyticsRows);
+    //className="wide_modal item_container"
 
     const listItems = analyticsRows.map((row) =>
-        <div key={row.id}>
-            <div>{row.employee_name}</div>
-            <div>{row.task_description}</div>
-            <div>{row.start_time}</div>
-            <div>{row.finish_time}</div>
-                <div>
-                    {row.period}
-                </div>
-        </div>
+        <tr key={row.id} >
+            <td>{row.employee_name}</td>
+            <td>{row.task_description}</td>
+            <td>{row.start_time}</td>
+            <td>{row.finish_time}</td>
+            <td>{row.period}</td>
+            <td style={row.finish_time ? {color: 'green'} : {color: 'red'}}>{row.finish_time ? "Выполнено" : "В процессе"}</td>            
+        </tr>
     );
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="Container">
-                <Logo className="logo"></Logo>
-                {listItems}
-                </div>
+        <div className="main">
+            <header className="header">
+                <Logo className="header img"></Logo>
             </header>
+            <div className="wide_modal item_container">
+            <table id="tasks">
+                <thead>
+                    <tr>
+                        <th>Имя Сотрудника</th>
+                        <th>День</th>
+                        <th>Месяц</th>
+                        <th>Год</th>
+                    </tr>
+                </thead>
+                
+            </table>
+            </div>
+
+            <div className="wide_modal item_container">
+            <table id="tasks">
+                <thead>
+                    <tr>
+                        <th>Имя Сотрудника</th>
+                        <th>Описание работы</th>
+                        <th>Время начала</th>
+                        <th>Время окончания</th>
+                        <th>Длительность (мин.)</th>
+                        <th>Статус</th>                    
+                    </tr>
+                </thead>
+
+                {listItems}
+            </table>
+            </div>
         </div>    
     )
 }
