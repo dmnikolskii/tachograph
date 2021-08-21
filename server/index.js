@@ -49,7 +49,9 @@ app.get("/name/:employee", (req, res) => {
 
 app.get("/api/analytics", (req, res) => {
 
-    let sql = `SELECT * FROM tasks`;
+    var staff_data = [];
+    let sql_tasks = `SELECT * FROM tasks`;
+    let sql_staff = `SELECT * FROM staff`;
     let db = new sqlite3.Database('./database/tasks.db', (err) => {
         if (err) {
             console.error(err.message);
@@ -57,7 +59,7 @@ app.get("/api/analytics", (req, res) => {
             throw err;
         }
         console.log('Connected to the database.');
-        db.all(sql,[],(err, rows ) => {
+        db.all(sql_tasks,[],(err, rows ) => {
             // console.log(rows);
             if (err) {
                 console.error(err.message);
@@ -65,17 +67,26 @@ app.get("/api/analytics", (req, res) => {
                 throw err;
             }
 
-            rows.map((row) => {
-                //console.log(row.finish_time)
-                const s_t = moment(row.start_time);
-                const f_t = moment(row.finish_time);
-                row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
-                row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
-                row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
-            })
+            db.all(sql_staff,[],(err, staff_data) => {
+                if (err) {
+                    console.error(err.message);
+                    db.close()  
+                    throw err;
+                }
+                rows.map((row) => {
+                    //console.log(row.finish_time)
+                    const s_t = moment(row.start_time);
+                    const f_t = moment(row.finish_time);
+                    row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
+                    row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
+                    row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
+                })
+    
+                const pivot_dta = {tasks: rows, summary: staff_data};
+                console.log(pivot_dta);
+                res.send(pivot_dta);               
+                });
 
-            console.log(rows);
-            res.send(rows);               
             });    
     });            
 

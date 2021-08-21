@@ -1,5 +1,6 @@
 import React from 'react'
 import {ReactComponent as Logo} from './Pepsico_logo.svg';
+import {ReactComponent as Excel} from './excel.svg';
 import Axios from 'axios'
 import { useState } from 'react';
 
@@ -11,6 +12,10 @@ function getAnalytics(setAnalyticsRows) {
         setAnalyticsRows(response.data);
         console.log(response.data);
     });    
+}
+
+function DownloadExcel() {
+
 }
 
 function Analytics() {
@@ -35,6 +40,7 @@ function Analytics() {
 
     return (
         <div className="main">
+            <Excel className="Excel_Button" onClick={()=>{DownloadExcel()}}></Excel>
             <header className="header">
                 <Logo className="header img"></Logo>
             </header>
@@ -42,7 +48,7 @@ function Analytics() {
             <table id="tasks">
                 <thead>
                     <tr>
-                        <th>Имя Сотрудника</th>
+                        <th>Имя Сотрудника </th>
                         <th>День</th>
                         <th>Месяц</th>
                         <th>Год</th>

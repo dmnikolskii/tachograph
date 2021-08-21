@@ -203,13 +203,15 @@ body {
 
 #tasks {
   position: relative;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   border-collapse: separate;
   width: 90%;
   margin: 30px;
   border-radius: 10px;
   table-layout:fixed;
   border-spacing: 0 5px;
+  font-size: clamp(8px, 10rem, 15px);
+  min-width: 400px;
 }
 
 #tasks td, #tasks th {
@@ -236,4 +238,30 @@ body {
   /*background-color: #04AA6D;*/
   background-color: #005CB4;
   color: white;
+}
+
+.Excel_Button {
+  position: fixed;
+  cursor: pointer;
+  left:30px;
+  top: 30px;
+  width: 50px;
+  height: 50px;
+  z-index: 100;
+  transition-duration: 0.5s;
+}
+
+.Excel_Button:hover {
+  transform: scale(1.15);
+  -webkit-transform: scale(1.15);
+  -moz-transform: scale(1.15);
+  -ms-transform: scale(1.15);
+  -o-transform: scale(1.15);
+}
+.Excel_Button:active {
+  transform: scale(0.91);
+  -webkit-transform: scale(0.91);
+  -moz-transform: scale(0.91);
+  -ms-transform: scale(0.91);
+  -o-transform: scale(0.91);
 }
