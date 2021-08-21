@@ -49,7 +49,6 @@ app.get("/name/:employee", (req, res) => {
 
 app.get("/api/analytics", (req, res) => {
 
-    var staff_data = [];
     let sql_tasks = `SELECT * FROM tasks`;
     let sql_staff = `SELECT * FROM staff`;
     let db = new sqlite3.Database('./database/tasks.db', (err) => {

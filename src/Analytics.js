@@ -2,18 +2,8 @@ import React from 'react'
 import {ReactComponent as Logo} from './Pepsico_logo.svg';
 import {ReactComponent as Excel} from './excel.svg';
 import Axios from 'axios'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-var loadAnalytics = true;
-
-function getAnalytics(setAnalyticsRows, setSummarysRows) {
-    Axios.get('http://localhost:3001/api/analytics')
-    .then((response) => {
-        setAnalyticsRows(response.data.tasks);
-        setSummarysRows(response.data.summary);
-        console.log(response.data);
-    });    
-}
 
 function DownloadExcel() {
     console.log("Creating Excel");
@@ -23,10 +13,19 @@ function Analytics() {
     const [analyticsRows, setAnalyticsRows] = useState([]);
     const [summaryRows, setSummarysRows] = useState([]);
 
-    if (loadAnalytics) getAnalytics(setAnalyticsRows, setSummarysRows);
-    loadAnalytics = false;
 
-    console.log(analyticsRows);
+    useEffect(() => {
+        Axios.get('http://localhost:3001/api/analytics')
+        .then((response) => {
+            setAnalyticsRows(response.data.tasks);
+            setSummarysRows(response.data.summary);
+            console.log("THIS IS A RESPONSE: " + response.data); 
+        });
+    }, [])
+
+
+    
+    //console.log(analyticsRows);
     //className="wide_modal item_container"
 
     const summaryItems = summaryRows.map((row) =>
@@ -65,7 +64,9 @@ function Analytics() {
                         <th>Год</th>
                     </tr>
                 </thead>
-                {summaryItems}
+                <tbody>
+                    {summaryItems}
+                </tbody>
             </table>
             </div>
 
@@ -77,11 +78,13 @@ function Analytics() {
                         <th>Описание работы</th>
                         <th>Время начала</th>
                         <th>Время окончания</th>
-                        <th>Длительность (мин.)</th>
+                        <th>Длительность(мин.)</th>
                         <th>Статус</th>                    
                     </tr>
                 </thead>
-                {listItems}
+                <tbody>
+                    {listItems}
+                </tbody>
             </table>
             </div>
         </div>    
