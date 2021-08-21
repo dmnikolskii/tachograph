@@ -7,6 +7,11 @@ import { useState, useEffect } from 'react';
 
 function DownloadExcel() {
     console.log("Creating Excel");
+    Axios.get('http://localhost:3001/api/getexcel')
+    .then((response) => {
+        console.log("THIS IS AN EXCEL: " + response.data); 
+    });
+
 }
 
 function Analytics() {

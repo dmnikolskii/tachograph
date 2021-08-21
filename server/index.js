@@ -6,98 +6,167 @@ const bodyParser = require('body-parser');
 const app = express()
 
 const moment = require('moment')
+const xl = require('excel4node');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+var excelData = [];
 
 app.get("/name/:employee", (req, res) => {
 
     const employee = req.params.employee;
     console.log(employee)
-    let sql = `SELECT * FROM staff WHERE employee == "${employee}"`;
-    console.log(sql)
-    let db = new sqlite3.Database('./database/tasks.db', (err) => {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        console.log('Connected to the database.');
-    });
+    let sql = `SELECT * FROM staff WHERE employee == ?`;
     
-    db.all(sql,[],(err, rows ) => {
-        // console.log(rows);
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        const employee = rows;
-        //res.send(rows);   
-        db.all(`SELECT task_description FROM tasks WHERE id == ?`,[employee[0].task_id],(err, rows ) => {
-            console.log(rows);
-            res.send({employee: employee[0], task: rows[0]});               
+    try {
+        let db = new sqlite3.Database('./database/tasks.db', (err) => {
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+            console.log('Connected to the database.');
         });
-            
-    });
-
-    db.close()  
-
-});
-
-app.get("/api/analytics", (req, res) => {
-
-    let sql_tasks = `SELECT * FROM tasks`;
-    let sql_staff = `SELECT * FROM staff`;
-    let db = new sqlite3.Database('./database/tasks.db', (err) => {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        console.log('Connected to the database.');
-        db.all(sql_tasks,[],(err, rows ) => {
+        
+        db.all(sql,[employee],(err, rows ) => {
             // console.log(rows);
             if (err) {
                 console.error(err.message);
                 db.close()  
                 throw err;
             }
+            const employee = rows;
+            //res.send(rows);   
+            db.all(`SELECT task_description FROM tasks WHERE id == ?`,[employee[0].task_id],(err, rows ) => {
+                //console.log(rows);
+                res.send({employee: employee[0], task: rows[0]});               
+            });
+                
+        });
+        db.close() 
+    } 
+    catch(err) {
+        console.log(err)
+    }
+});
 
-            db.all(sql_staff,[],(err, staff_data) => {
+app.get("/api/getexcel", (req, res) => {
+    if (!excelData) return;
+
+    try {
+        var wb = new xl.Workbook();
+        var ws = wb.addWorksheet("Time Sheet");
+
+        var regular = wb.createStyle({
+            font: {
+                color: "#000000",
+                size: 10,
+            }
+        });
+    
+        var bold = wb.createStyle({
+            font: {
+                bold: true,
+                color: "#000000",
+                size: 10,
+            }
+        });
+
+        ws.cell(1, 1).string("Имя сотрудника").style(bold);
+        ws.cell(1, 2).string("Описание работы").style(bold);
+        ws.cell(1, 3).string("Время начала").style(bold);
+        ws.cell(1, 4).string("Время окончания").style(bold);
+        ws.cell(1, 5).string("Длительность(мин.)").style(bold);
+        ws.cell(1, 6).string("Статус").style(bold);
+
+            console.log("+++++++++EEXCEL+++++++++")
+            
+            console.log(excelData)
+            console.log("/////+++++++++EEXCEL+++++++++")
+
+        let row_n = 2;
+        excelData.map((item) => {
+            ws.cell(row_n, 1).string(item.employee_name).style(regular);
+            ws.cell(row_n, 2).string(item.task_description).style(regular);
+            ws.cell(row_n, 3).string(item.start_time).style(regular);
+            ws.cell(row_n, 4).string(item.finish_time).style(regular);
+            ws.cell(row_n, 5).number(item.period).style(regular);
+            //console.log(item.period)
+            ws.cell(row_n, 6).string(item.finish_time ? "Выполнено" : "В процессе").style(regular);
+            row_n++;
+        })
+        //for (a = 0; a < API_RESPONSE.length; a++) {
+        //    ws.cell(a + 2, 1)
+        //    .number(API_RESPONSE[a].main.temp)
+        //    .style(style);
+        //}
+        wb.write("Task Report.xlsx");
+    }
+    catch(err) {
+        console.log(err);
+    }
+});
+
+app.get("/api/analytics", (req, res) => {
+
+    let sql_tasks = `SELECT * FROM tasks`;
+    let sql_staff = `SELECT * FROM staff`;
+    try {
+        let db = new sqlite3.Database('./database/tasks.db', (err) => {
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+            console.log('Connected to the database.');
+            db.all(sql_tasks,[],(err, rows ) => {
+                // console.log(rows);
                 if (err) {
                     console.error(err.message);
                     db.close()  
                     throw err;
                 }
 
-                staff_data.map((summary_row) => {
-                    summary_row.daily = 20;
-                    summary_row.mtd = 60;
-                    summary_row.ytd = 80;
-                });
+                db.all(sql_staff,[],(err, staff_data) => {
+                    if (err) {
+                        console.error(err.message);
+                        db.close()  
+                        throw err;
+                    }
 
-                rows.map((row) => {
-                    //console.log(row.finish_time)
-                    const s_t = moment(row.start_time);
-                    const f_t = moment(row.finish_time);
-                    row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
-                    row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
-                    row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
-                });
-    
-                const pivot_dta = {tasks: rows, summary: staff_data};
-                console.log(pivot_dta);
-                res.send(pivot_dta);               
-                });
+                    staff_data.map((summary_row) => {
+                        summary_row.daily = 20;
+                        summary_row.mtd = 60;
+                        summary_row.ytd = 80;
+                    });
 
-            });    
-    });            
+                    rows.map((row) => {
+                        //console.log(row.finish_time)
+                        const s_t = moment(row.start_time);
+                        row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
+                        if (row.finish_time) {
+                            const f_t = moment(row.finish_time);
+                            row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
+                            row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
+                        }
+                    });
+        
+                    excelData.push(...rows);
+                    const pivot_dta = {tasks: rows, summary: staff_data};
+                    //console.log(pivot_dta);
+                    res.send(pivot_dta);               
+                    });
 
-    db.close()  
+                });    
+        });            
 
+        db.close()  
+    }
+    catch(err) {
+        console.log(err);
+    }
 });
 
 app.post('/api/start', (req, res) => {
@@ -109,45 +178,49 @@ app.post('/api/start', (req, res) => {
     let sql_insertion = `INSERT INTO tasks (employee_name, task_description, start_time) VALUES (?, ? , ?)`;
     let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
 
-    let db = new sqlite3.Database('./database/tasks.db', (err) => {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        console.log('Connected to the database.');
-    });
-
-    db.run(sql_insertion, [query.name, query.task, moment().utcOffset('+0600')], function(err, rows) {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        t_id = this.lastID;
-        console.log("Inserted ID: " + t_id);
-
-        db.run(`UPDATE staff SET active = 1, task_id = ? WHERE id == ?`, [t_id, query.id], function(err){
+    try {
+        let db = new sqlite3.Database('./database/tasks.db', (err) => {
             if (err) {
                 console.error(err.message);
                 db.close()  
                 throw err;
             }
+            console.log('Connected to the database.');
+        });
 
-                db.all(sql_updated_res,[],(err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        db.close()  
-                        throw err;
-                    }
-                    res.send(rows);         
+        db.run(sql_insertion, [query.name, query.task, moment().utcOffset('+0600')], function(err, rows) {
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+            t_id = this.lastID;
+            console.log("Inserted ID: " + t_id);
+
+            db.run(`UPDATE staff SET active = 1, task_id = ? WHERE id == ?`, [t_id, query.id], function(err){
+                if (err) {
+                    console.error(err.message);
+                    db.close()  
+                    throw err;
+                }
+
+                    db.all(sql_updated_res,[],(err, rows) => {
+                        if (err) {
+                            console.error(err.message);
+                            db.close()  
+                            throw err;
+                        }
+                        res.send(rows);         
+                    });
                 });
-            });
-    
-    });
+        
+        });
 
-    db.close()  
-
+        db.close(); 
+    }
+    catch(err) {
+        console.log(err);
+    }
 });
     
 app.post('/api/stop', (req, res) => {
@@ -159,43 +232,45 @@ app.post('/api/stop', (req, res) => {
     let sql_update = `UPDATE tasks SET finish_time = ? WHERE id == ?`;
     let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
 
-    let db = new sqlite3.Database('./database/tasks.db', (err) => {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        console.log('Connected to the database.');
-    });
+    try {
+        let db = new sqlite3.Database('./database/tasks.db', (err) => {
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+            console.log('Connected to the database.');
+        });
 
-    db.run(sql_update, [moment().utcOffset('+0600'), query.task_id], function(err) {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        
-        db.run(sql_employee, query.id, function(err){
+        db.run(sql_update, [moment().utcOffset('+0600'), query.task_id], function(err) {
             if (err) {
                 console.error(err.message);
                 db.close()  
                 throw err;
             }
             
-            db.all(sql_updated_res,[],(err, rows) => {
+            db.run(sql_employee, query.id, function(err){
                 if (err) {
                     console.error(err.message);
                     db.close()  
                     throw err;
                 }
-                res.send(rows);         
+                
+                db.all(sql_updated_res,[],(err, rows) => {
+                    if (err) {
+                        console.error(err.message);
+                        db.close()  
+                        throw err;
+                    }
+                    res.send(rows);         
+                });
             });
         });
-    });
-
-
-
-    db.close()  
+        db.close();
+    }
+    catch(err) {
+        console.log(err);
+    }
 });
 
 const PORT = process.env.PORT || 3001;
