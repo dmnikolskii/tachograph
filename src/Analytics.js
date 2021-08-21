@@ -6,26 +6,37 @@ import { useState } from 'react';
 
 var loadAnalytics = true;
 
-function getAnalytics(setAnalyticsRows) {
+function getAnalytics(setAnalyticsRows, setSummarysRows) {
     Axios.get('http://localhost:3001/api/analytics')
     .then((response) => {
-        setAnalyticsRows(response.data);
+        setAnalyticsRows(response.data.tasks);
+        setSummarysRows(response.data.summary);
         console.log(response.data);
     });    
 }
 
 function DownloadExcel() {
-
+    console.log("Creating Excel");
 }
 
 function Analytics() {
     const [analyticsRows, setAnalyticsRows] = useState([]);
+    const [summaryRows, setSummarysRows] = useState([]);
 
-    if (loadAnalytics) getAnalytics(setAnalyticsRows);
+    if (loadAnalytics) getAnalytics(setAnalyticsRows, setSummarysRows);
     loadAnalytics = false;
 
     console.log(analyticsRows);
     //className="wide_modal item_container"
+
+    const summaryItems = summaryRows.map((row) =>
+        <tr key={row.id} >
+            <td>{row.name}</td>
+            <td>{row.daily}</td>
+            <td>{row.mtd}</td>
+            <td>{row.ytd}</td>
+        </tr>
+    );
 
     const listItems = analyticsRows.map((row) =>
         <tr key={row.id} >
@@ -54,7 +65,7 @@ function Analytics() {
                         <th>Год</th>
                     </tr>
                 </thead>
-                
+                {summaryItems}
             </table>
             </div>
 
@@ -70,7 +81,6 @@ function Analytics() {
                         <th>Статус</th>                    
                     </tr>
                 </thead>
-
                 {listItems}
             </table>
             </div>

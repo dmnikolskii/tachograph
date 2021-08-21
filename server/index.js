@@ -73,6 +73,13 @@ app.get("/api/analytics", (req, res) => {
                     db.close()  
                     throw err;
                 }
+
+                staff_data.map((summary_row) => {
+                    summary_row.daily = 20;
+                    summary_row.mtd = 60;
+                    summary_row.ytd = 80;
+                });
+
                 rows.map((row) => {
                     //console.log(row.finish_time)
                     const s_t = moment(row.start_time);
@@ -80,7 +87,7 @@ app.get("/api/analytics", (req, res) => {
                     row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
                     row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
                     row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
-                })
+                });
     
                 const pivot_dta = {tasks: rows, summary: staff_data};
                 console.log(pivot_dta);
