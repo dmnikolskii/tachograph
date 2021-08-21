@@ -5,6 +5,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express()
 
+const moment = require('moment')
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,9 +64,18 @@ app.get("/api/analytics", (req, res) => {
                 db.close()  
                 throw err;
             }
-            rows.period = 3;
+
+            rows.map((row) => {
+                //console.log(row.finish_time)
+                const s_t = moment(row.start_time);
+                const f_t = moment(row.finish_time);
+                row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
+                row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
+                row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
+            })
+
             console.log(rows);
-                res.send(rows);               
+            res.send(rows);               
             });    
     });            
 
@@ -90,7 +101,7 @@ app.post('/api/start', (req, res) => {
         console.log('Connected to the database.');
     });
 
-    db.run(sql_insertion, [query.name, query.task, Date.now()], function(err, rows) {
+    db.run(sql_insertion, [query.name, query.task, moment().utcOffset('+0600')], function(err, rows) {
         if (err) {
             console.error(err.message);
             db.close()  
@@ -128,7 +139,7 @@ app.post('/api/stop', (req, res) => {
     console.log(query)
 
     let sql_employee = `UPDATE staff SET active = 0 WHERE id == ?`;
-    let sql_update = `UPDATE tasks SET finish_time = ${Date.now()} WHERE id == ?`;
+    let sql_update = `UPDATE tasks SET finish_time = ? WHERE id == ?`;
     let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
 
     let db = new sqlite3.Database('./database/tasks.db', (err) => {
@@ -140,32 +151,32 @@ app.post('/api/stop', (req, res) => {
         console.log('Connected to the database.');
     });
 
-    db.run(sql_update, query.task_id, function(err){
+    db.run(sql_update, [moment().utcOffset('+0600'), query.task_id], function(err) {
         if (err) {
             console.error(err.message);
             db.close()  
             throw err;
         }
         
+        db.run(sql_employee, query.id, function(err){
+            if (err) {
+                console.error(err.message);
+                db.close()  
+                throw err;
+            }
+            
+            db.all(sql_updated_res,[],(err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    db.close()  
+                    throw err;
+                }
+                res.send(rows);         
+            });
+        });
     });
 
-    db.run(sql_employee, query.id, function(err){
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        
-    });
 
-    db.all(sql_updated_res,[],(err, rows) => {
-        if (err) {
-            console.error(err.message);
-            db.close()  
-            throw err;
-        }
-        res.send(rows);         
-    });
 
     db.close()  
 });
