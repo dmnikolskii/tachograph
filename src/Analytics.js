@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 var fileDownload = require('js-file-download');
 
-const DOMAIN = "http://localhost:3001"
+const DOMAIN = "" // http://localhost:3001
 
 function DownloadExcel() {
     console.log("Creating Excel");
@@ -55,7 +55,7 @@ function Analytics() {
             <td>{row.start}</td>
             <td>{row.finish}</td>
             <td>{row.period}</td>
-            <td style={row.finish_time ? {color: 'green'} : {color: 'red'}}>{row.finish_time ? "Выполнено" : "В процессе"}</td>            
+            <td style={(row.finish_time && row.finish_time !== "-") ? {color: 'green'} : {color: 'red'}}>{(row.finish_time && row.finish_time !== "-") ? "Выполнено" : "В процессе"}</td>            
         </tr>
     );
 

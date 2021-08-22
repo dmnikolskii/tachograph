@@ -25,7 +25,7 @@ app.get("/name/:employee", (req, res) => {
     const employee = req.params.employee;
     console.log(employee)
 
-    if (employee.length < 5) return;
+    if (employee.length < 3 && employee != null && employee !== "null") return;
 
     let sql = `SELECT * FROM staff WHERE employee == ?`;
     
@@ -106,7 +106,7 @@ app.get("/api/getexcel", (req, res) => {
             ws.cell(row_n, 6).string(item.finish_time).style(regular);
             ws.cell(row_n, 7).number(item.period).style(regular);
             //console.log(item.period)
-            ws.cell(row_n, 8).string(item.finish_time ? "Выполнено" : "В процессе").style(regular);
+            ws.cell(row_n, 8).string((item.finish && item.finish !== "-") ? "Выполнено" : "В процессе").style(regular);
             row_n++;
         })
         //for (a = 0; a < API_RESPONSE.length; a++) {
@@ -166,9 +166,15 @@ app.get("/api/analytics", (req, res) => {
                             row.finish_time = f_t.format("HH:mm:ss");
                             row.finish = f_t.format("DD-MM-YYYY HH:mm:ss");
                             row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
+                        } else {
+                            row.finish_date = "-";
+                            row.finish_time = "-";
+                            row.finish = "-";
+                            row.period = 0;
                         }
                     });
-        
+                    
+                    excelData = [];
                     excelData.push(...rows);
                     const pivot_dta = {tasks: rows, summary: staff_data};
                     //console.log(pivot_dta);
@@ -295,8 +301,8 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-// app.listen();
+app.listen();
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-});
+///app.listen(PORT, () => {
+//    console.log(`Server is running on port ${PORT}.`);
+//});
