@@ -10,8 +10,8 @@ function App() {
     <BrowserRouter>
       <Switch>
         {/*<Route path = "/:employee" component = {MainPage} />*/}
-        <Route path = "/analytics" component = {Analytics} />  
-        <Route path = "/" component = {MainPage} />  
+        <Route exact path = "/analytics" component = {Analytics} />  
+        <Route exact path = "/" component = {MainPage} />  
       </Switch>
     </BrowserRouter>
 

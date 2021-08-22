@@ -2,6 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 
 const express = require('express')
 const cors = require('cors');
+const path = require('path');
+
 const bodyParser = require('body-parser');
 const app = express()
 
@@ -12,12 +14,19 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.static('/home/tachxoix/public_html'));
+
 var excelData = [];
+
+
 
 app.get("/name/:employee", (req, res) => {
 
     const employee = req.params.employee;
     console.log(employee)
+
+    if (employee.length < 5) return;
+
     let sql = `SELECT * FROM staff WHERE employee == ?`;
     
     try {
@@ -76,13 +85,14 @@ app.get("/api/getexcel", (req, res) => {
 
         ws.cell(1, 1).string("Имя сотрудника").style(bold);
         ws.cell(1, 2).string("Описание работы").style(bold);
-        ws.cell(1, 3).string("Время начала").style(bold);
-        ws.cell(1, 4).string("Время окончания").style(bold);
-        ws.cell(1, 5).string("Длительность(мин.)").style(bold);
-        ws.cell(1, 6).string("Статус").style(bold);
+        ws.cell(1, 3).string("Дата начала").style(bold);
+        ws.cell(1, 4).string("Время начала").style(bold);
+        ws.cell(1, 5).string("Дата окончания").style(bold);
+        ws.cell(1, 6).string("Время окончания").style(bold);
+        ws.cell(1, 7).string("Длительность(мин.)").style(bold);
+        ws.cell(1, 8).string("Статус").style(bold);
 
-            console.log("+++++++++EEXCEL+++++++++")
-            
+            console.log("+++++++++EEXCEL+++++++++")            
             console.log(excelData)
             console.log("/////+++++++++EEXCEL+++++++++")
 
@@ -90,11 +100,13 @@ app.get("/api/getexcel", (req, res) => {
         excelData.map((item) => {
             ws.cell(row_n, 1).string(item.employee_name).style(regular);
             ws.cell(row_n, 2).string(item.task_description).style(regular);
-            ws.cell(row_n, 3).string(item.start_time).style(regular);
-            ws.cell(row_n, 4).string(item.finish_time).style(regular);
-            ws.cell(row_n, 5).number(item.period).style(regular);
+            ws.cell(row_n, 3).string(item.start_date).style(regular);
+            ws.cell(row_n, 4).string(item.start_time).style(regular);
+            ws.cell(row_n, 5).string(item.finish_date).style(regular);
+            ws.cell(row_n, 6).string(item.finish_time).style(regular);
+            ws.cell(row_n, 7).number(item.period).style(regular);
             //console.log(item.period)
-            ws.cell(row_n, 6).string(item.finish_time ? "Выполнено" : "В процессе").style(regular);
+            ws.cell(row_n, 8).string(item.finish_time ? "Выполнено" : "В процессе").style(regular);
             row_n++;
         })
         //for (a = 0; a < API_RESPONSE.length; a++) {
@@ -102,7 +114,7 @@ app.get("/api/getexcel", (req, res) => {
         //    .number(API_RESPONSE[a].main.temp)
         //    .style(style);
         //}
-        wb.write("Task Report.xlsx");
+        wb.write("Task Report.xlsx", res);
     }
     catch(err) {
         console.log(err);
@@ -145,10 +157,14 @@ app.get("/api/analytics", (req, res) => {
                     rows.map((row) => {
                         //console.log(row.finish_time)
                         const s_t = moment(row.start_time);
-                        row.start_time = s_t.format("DD-MM-YYYY HH:mm:ss");
+                        row.start_date = s_t.format("DD-MM-YYYY");
+                        row.start_time = s_t.format("HH:mm:ss");
+                        row.start = s_t.format("DD-MM-YYYY HH:mm:ss");
                         if (row.finish_time) {
                             const f_t = moment(row.finish_time);
-                            row.finish_time = f_t.format("DD-MM-YYYY HH:mm:ss");
+                            row.finish_date = f_t.format("DD-MM-YYYY");
+                            row.finish_time = f_t.format("HH:mm:ss");
+                            row.finish = f_t.format("DD-MM-YYYY HH:mm:ss");
                             row.period = Math.ceil(moment.duration(f_t.diff(s_t)).asMinutes());
                         }
                     });
@@ -273,7 +289,14 @@ app.post('/api/stop', (req, res) => {
     }
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join('/home/tachxoix/public_html/index.html'));
+});
+
 const PORT = process.env.PORT || 3001;
+
+// app.listen();
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });

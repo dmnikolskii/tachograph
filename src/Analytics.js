@@ -4,12 +4,18 @@ import {ReactComponent as Excel} from './excel.svg';
 import Axios from 'axios'
 import { useState, useEffect } from 'react';
 
+var fileDownload = require('js-file-download');
+
+const DOMAIN = "http://localhost:3001"
 
 function DownloadExcel() {
     console.log("Creating Excel");
-    Axios.get('http://localhost:3001/api/getexcel')
+    Axios.get(DOMAIN+'/api/getexcel', {         
+        responseType: 'blob', // Important
+    })
     .then((response) => {
         console.log("THIS IS AN EXCEL: " + response.data); 
+        fileDownload(response.data, `Task Report.xlsx`);
     });
 
 }
@@ -20,7 +26,7 @@ function Analytics() {
 
 
     useEffect(() => {
-        Axios.get('http://localhost:3001/api/analytics')
+        Axios.get(DOMAIN+'/api/analytics')
         .then((response) => {
             setAnalyticsRows(response.data.tasks);
             setSummarysRows(response.data.summary);
@@ -46,8 +52,8 @@ function Analytics() {
         <tr key={row.id} >
             <td>{row.employee_name}</td>
             <td>{row.task_description}</td>
-            <td>{row.start_time}</td>
-            <td>{row.finish_time}</td>
+            <td>{row.start}</td>
+            <td>{row.finish}</td>
             <td>{row.period}</td>
             <td style={row.finish_time ? {color: 'green'} : {color: 'red'}}>{row.finish_time ? "Выполнено" : "В процессе"}</td>            
         </tr>
