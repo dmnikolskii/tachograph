@@ -7,7 +7,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const app = express()
 
-const moment = require('moment')
+const moment = require('moment-timezone')
 const xl = require('excel4node');
 
 app.use(cors());
@@ -210,7 +210,7 @@ app.post('/api/start', (req, res) => {
             console.log('Connected to the database.');
         });
 
-        db.run(sql_insertion, [query.name, query.task, moment().utcOffset('+0600')], function(err, rows) {
+        db.run(sql_insertion, [query.name, query.task, moment().add({'hours':10})], function(err, rows) {
             if (err) {
                 console.error(err.message);
                 db.close()  
@@ -264,7 +264,7 @@ app.post('/api/stop', (req, res) => {
             console.log('Connected to the database.');
         });
 
-        db.run(sql_update, [moment().utcOffset('+0600'), query.task_id], function(err) {
+        db.run(sql_update, [moment().add({'hours':10}), query.task_id], function(err) {
             if (err) {
                 console.error(err.message);
                 db.close()  
@@ -301,8 +301,8 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen();
+// app.listen();
 
-///app.listen(PORT, () => {
-//    console.log(`Server is running on port ${PORT}.`);
-//});
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
+});
