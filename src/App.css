@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+  /*max-height: 700px;*/
+}
+
+h1 {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-shadow:        
+                  3px 3px 3px #08090a;
+
+}
+
+.logo {
+  max-height: 20vh;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.Container {
+  position: relative;
+  background-color: #16181d;
+  -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+  box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 10px auto;
+  border-radius: 10px;
+  width: 80vw;
+  height: 95vh;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+
+.TaskDescription {
+  width: 80%;
+  height: 30%;
+  margin: 20px;
+  margin-top: 10px;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  padding: 30px;
+  resize: none;
+  max-width: 80%;
+}
+
+.Button {
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  font-weight: bold;
+  font-size: 150%;
+  color: white;
+  width: 60%;
+  margin: 20px;
+  text-shadow:    -1px -1px 0 #000,      
+                  1px -1px 0 #000,    
+                  -1px 1px 0 #000,    
+                  1px 1px 0 #000,
+                  3px 3px 2px #08090a;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.Red {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ad6c6c), to(#ff0000));
+}
+
+.Button:active.Red{
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ff0000), to(#ad6c6c));
+}
+
+.Green {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#9df382), to(#2c6b02));
+}
+
+.Button:active.Green{
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#2c6b02), to(#9df382));
+}
+
+.Button:disabled {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#9b9ba0), to(#4b4b4b));
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+body {
+  margin: 0 0 0 0;
+  height: 100vh;
+  background: #282c34;
+  opacity: 1;
+  background-size: 100%; 
+}
+
+.main {
+  display: inline-block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #282c34;
+  text-align: center;
+}
+
+.header {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 80px;
+  box-shadow: 0px 5px 5px #000000;
+  text-align: center;
+  background-color: #16181d;
+}
+
+.header img {
+  position: relative;
+  width: auto;
+  height: 100%;
+}
+
+.item_container {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(34, 47, 62, 0.5);
+  background-color: #16181d;
+
+  border-radius: 10px;
+  width: 70%;
+  height: auto;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  margin-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: left;
+  box-shadow: 1px 1px 6px 6px rgba(20, 20, 20, 0.7);
+
+  -webkit-animation: fadeout 0.5s forwards; /* Safari 4+ */
+  -moz-animation:    fadeout 0.5s forwards; /* Fx 5+ */
+  -o-animation:      fadeout 0.5s forwards; /* Opera 12+ */
+  animation:         fadeout 0.5s forwards; /* IE 10+, Fx 29+ */
+}
+
+.wide_modal{
+  width: 85%;
+}
+
+#tasks {
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  border-collapse: separate;
+  width: 90%;
+  margin: 30px;
+  border-radius: 10px;
+  table-layout:fixed;
+  border-spacing: 0 5px;
+  font-size: clamp(8px, 10rem, 15px);
+  min-width: 400px;
+}
+
+#tasks td, #tasks th {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+
+#tasks tr:nth-child(even){background-color: #f2f2f2;}
+
+#tasks tr {
+  background-color: #ddd;
+  word-wrap: break-word;
+}
+
+#tasks th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  /*background-color: #04AA6D;*/
+  background-color: #005CB4;
+  color: white;
+}
+
+.Excel_Button {
+  position: fixed;
+  cursor: pointer;
+  left:30px;
+  top: 30px;
+  width: 50px;
+  height: 50px;
+  z-index: 100;
+  transition-duration: 0.5s;
+}
+
+.Excel_Button:hover {
+  transform: scale(1.15);
+  -webkit-transform: scale(1.15);
+  -moz-transform: scale(1.15);
+  -ms-transform: scale(1.15);
+  -o-transform: scale(1.15);
+}
+.Excel_Button:active {
+  transform: scale(0.91);
+  -webkit-transform: scale(0.91);
+  -moz-transform: scale(0.91);
+  -ms-transform: scale(0.91);
+  -o-transform: scale(0.91);
+}
