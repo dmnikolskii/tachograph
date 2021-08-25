@@ -90,7 +90,8 @@ app.get("/api/getexcel", (req, res) => {
         ws.cell(1, 5).string("Дата окончания").style(bold);
         ws.cell(1, 6).string("Время окончания").style(bold);
         ws.cell(1, 7).string("Длительность(мин.)").style(bold);
-        ws.cell(1, 8).string("Статус").style(bold);
+        ws.cell(1, 8).string("Смена").style(bold);
+        ws.cell(1, 9).string("Статус").style(bold);
 
             console.log("+++++++++EEXCEL+++++++++")            
             console.log(excelData)
@@ -105,8 +106,9 @@ app.get("/api/getexcel", (req, res) => {
             ws.cell(row_n, 5).string(item.finish_date).style(regular);
             ws.cell(row_n, 6).string(item.finish_time).style(regular);
             ws.cell(row_n, 7).number(item.period).style(regular);
+            ws.cell(row_n, 8).number(item.shift_duration).style(regular);
             //console.log(item.period)
-            ws.cell(row_n, 8).string((item.finish && item.finish !== "-") ? "Выполнено" : "В процессе").style(regular);
+            ws.cell(row_n, 9).string((item.finish && item.finish !== "-") ? "Выполнено" : "В процессе").style(regular);
             row_n++;
         })
         //for (a = 0; a < API_RESPONSE.length; a++) {
@@ -197,7 +199,7 @@ app.post('/api/start', (req, res) => {
     console.log(query)
     //let sql_employee = `UPDATE staff SET active = 1 WHERE id == ?`;
     var t_id = 0;
-    let sql_insertion = `INSERT INTO tasks (employee_name, task_description, start_time) VALUES (?, ? , ?)`;
+    let sql_insertion = `INSERT INTO tasks (employee_name, task_description, start_time, shift_duration) VALUES (?, ? , ?, ?)`;
     let sql_updated_res = `SELECT * FROM staff WHERE id == "${query.id}"`;
 
     try {
@@ -210,7 +212,7 @@ app.post('/api/start', (req, res) => {
             console.log('Connected to the database.');
         });
 
-        db.run(sql_insertion, [query.name, query.task, moment().add({'hours':10})], function(err, rows) {
+        db.run(sql_insertion, [query.name, query.task, moment().add({'hours':10}), query.shift_duration], function(err, rows) {
             if (err) {
                 console.error(err.message);
                 db.close()  
