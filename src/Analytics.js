@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 var fileDownload = require('js-file-download');
 
-const DOMAIN = "http://localhost:3001" // http://localhost:3001
+const DOMAIN = "" // http://localhost:3001
 
 function DownloadExcel() {
     console.log("Creating Excel");
