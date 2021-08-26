@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 var fileDownload = require('js-file-download');
 
-const DOMAIN = "" // http://localhost:3001
+const DOMAIN = "http://localhost:3001" // http://localhost:3001
 
 function DownloadExcel() {
     console.log("Creating Excel");
@@ -70,9 +70,9 @@ function Analytics() {
                 <thead>
                     <tr>
                         <th>Имя Сотрудника </th>
-                        <th>День</th>
-                        <th>Месяц</th>
-                        <th>Год</th>
+                        <th>День, %</th>
+                        <th>Месяц, %</th>
+                        <th>Год, %</th>
                     </tr>
                 </thead>
                 <tbody>

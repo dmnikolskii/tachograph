@@ -6,7 +6,7 @@ import { useState, useEffect} from 'react';
 import { useLocation } from 'react-router';
 import { useRef } from 'react';
 
-const DOMAIN = "" // http://localhost:3001
+const DOMAIN = "http://localhost:3001" // http://localhost:3001
 
 function getName(setEmployee, setTask, name) {
 
@@ -58,7 +58,7 @@ function MainPage() {
  
     useEffect(()=>{
         console.log("The name is: " + name)
-        getName(setEmployee, setTask, name)
+        if (name != null) getName(setEmployee, setTask, name)
     }, [name]
     );
 

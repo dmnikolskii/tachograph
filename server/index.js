@@ -123,6 +123,8 @@ app.get("/api/getexcel", (req, res) => {
     }
 });
 
+/*Fetching analytics*/
+
 app.get("/api/analytics", (req, res) => {
 
     let sql_tasks = `SELECT * FROM tasks`;
@@ -158,6 +160,7 @@ app.get("/api/analytics", (req, res) => {
 
                     rows.map((row) => {
                         //console.log(row.finish_time)
+                        row.start_timestamp = row.start_time;
                         const s_t = moment(row.start_time);
                         row.start_date = s_t.format("DD-MM-YYYY");
                         row.start_time = s_t.format("HH:mm:ss");
@@ -175,7 +178,99 @@ app.get("/api/analytics", (req, res) => {
                             row.period = 0;
                         }
                     });
-                    
+
+                    let taskCopy = rows.map((x) => x);
+                    let day = []
+
+                    staff_data.map((employee) => {
+                        let daily_tasks = 0;
+                        let daily_shift_duration = 0;
+                        
+                        let month_activities = [];
+                        let month_daily = "";
+                        let month_daily_shift = 8;
+                        let month_daily_sum = 0;
+                        let year_activities = [];
+                        console.log(employee.name)
+                        //console.log(employee)
+                        taskCopy.map((task) => {
+                            if (employee.name == task.employee_name) {
+                                if (moment(task.start_timestamp).format("DD-MM-YYYY") == moment().format("DD-MM-YYYY")) {
+                                    daily_tasks += task.period;
+                                    daily_shift_duration = task.shift_duration;
+                                    //console.log(task.employee_name)    
+                                    //console.log(task.period)    
+                                }
+                                if (moment(task.start_timestamp).format("MM-YYYY") == moment().format("MM-YYYY")) {
+                                    if (month_daily == "") {
+                                        console.log("Empty")
+                                        month_daily = moment(task.start_timestamp).format("DD-MM-YYYY");
+
+                                    }
+                                    if (task.period > 0) {
+                                        if (month_daily == moment(task.start_timestamp).format("DD-MM-YYYY")) {
+                                            console.log("Задача в тот же день - " + moment(task.start_timestamp).format("DD-MM-YYYY"))
+                                            month_daily_sum += task.period;
+                                            month_daily_shift = task.shift_duration;
+                                            console.log(task.period)
+                                            
+                                        }
+                                        else {
+                                            console.log("Sum1: " + month_daily_sum);
+                                            month_activities.push(month_daily_sum / 60 / month_daily_shift);
+                                            month_daily_sum = 0;
+                                            month_daily_sum += task.period;
+                                            month_daily_shift = task.shift_duration;
+                                            console.log(task.period)
+                                            // month_activities.push(month_daily_sum / 60 / month_daily_shift);
+                                            month_daily = moment(task.start_timestamp).format("DD-MM-YYYY");                                        
+                                        }
+                                    }
+                                }
+                                //if (moment(task.start_timestamp).month() == moment().month()) month_activities.push({task_period:task.period,  shift_duration: task.shift_duration});
+                                //if (moment(task.start_timestamp).year() == moment().year()) year_activities.push(task.period / task.shift_duration * 100);
+                            }
+                        });
+
+                        console.log("Sum: " + month_daily_sum);
+                        month_activities.push(month_daily_sum / 60 / month_daily_shift);
+                        
+                        console.log(month_activities)
+                        
+                        employee.daily = Number((daily_tasks / 60 / daily_shift_duration) * 100).toFixed(1);
+                        employee.daily = employee.daily > 0 ? employee.daily : "-"
+
+                        employee.mtd = "";
+                        
+                        console.log("=============")
+                        let mtd_sum = 0.0;
+                        month_activities.map((activity) => {
+                            
+                            console.log(employee.employee)
+                            activity *= 100.0;
+                            console.log(activity)
+
+                            mtd_sum += Number(activity);
+
+                            
+                            console.log(mtd_sum)
+                        });
+                        
+                        employee.mtd = mtd_sum;
+
+                        console.log(month_activities.length)
+                        employee.mtd = (employee.mtd / month_activities.length).toFixed(1);
+                        employee.mtd = employee.mtd > 0 ? employee.mtd : "-";
+                        //month_activities.map((activity) => {
+
+                        //})
+
+                        //console.log("===============")
+                        //console.log(employee.name)
+                        //console.log(employee.daily)
+                    });
+
+
                     excelData = [];
                     excelData.push(...rows);
                     const pivot_dta = {tasks: rows, summary: staff_data};
@@ -192,6 +287,8 @@ app.get("/api/analytics", (req, res) => {
         console.log(err);
     }
 });
+
+/* Start button onClick request*/
 
 app.post('/api/start', (req, res) => {
     const query = req.body.query;
@@ -246,7 +343,9 @@ app.post('/api/start', (req, res) => {
         console.log(err);
     }
 });
-    
+
+/* Stop button onClick request*/
+
 app.post('/api/stop', (req, res) => {
     const query = req.body.query;
     console.log("****STOP*********")
@@ -302,6 +401,8 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+
+/* Launching the server*/
 
 app.listen();
 
